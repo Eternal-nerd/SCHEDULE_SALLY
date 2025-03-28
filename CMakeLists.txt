@@ -16,10 +16,13 @@ include_directories(${SDL3_INCLUDE_DIRS})
 # add source files:
 set(SOURCES
 	src/main.cpp
+	src/engine.cpp
 )
 
 # add headers
 set(HEADERS
+	src/engine.h
+
 	lib/stb_image.h
 )
 
