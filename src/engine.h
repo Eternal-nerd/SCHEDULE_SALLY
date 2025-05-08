@@ -1,26 +1,13 @@
 #pragma once
 
-#include <SDL3/SDL.h>
+#include <stdio.h>
 
-#include <string>
+#include "types.h"
 
-#include "gfx.h"
+typedef struct engine {
+	u32 id;
+	
+	
+} engine;
 
-class Engine {
-public:
-	void run();
-
-private:
-	bool running_ = false;
-
-	// Events
-	SDL_Event event_;
-
-	// Graphics
-	Gfx gfx_;
-
-	void init();
-	void loop();
-	void cleanup();
-
-};
+error_code run_engine(engine* e);
