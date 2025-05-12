@@ -71,7 +71,7 @@ QueueFamilyIndices util::findQueueFamilies(VkPhysicalDevice physicalDevice, VkSu
 -----~~~~~=====<<<<<{_VULKAN_INIT_}>>>>>=====~~~~~-----
 */
 // TODO make this work for multiple validation layers
-b8 check_validation_layer_support(const char* const* validation_layer) {
+b8 check_validation_layer_support(const char** validation_layers) {
     u32 layer_count;
     vkEnumerateInstanceLayerProperties(&layer_count, NULL);
 
@@ -85,7 +85,7 @@ b8 check_validation_layer_support(const char* const* validation_layer) {
 	
 	b8 layer_found = false;
 	for (u32 i = 0; i<layer_count; i++) {
-		if (strcmp(validation_layer, available_layers[i].layerName)) {
+		if (strcmp(validation_layers, available_layers[i].layerName)) {
 			layer_found = true;
 			break;
 		}

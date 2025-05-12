@@ -18,6 +18,9 @@ typedef bool b8;
 
 // vectors
 
+// string stuff
+#define LIST_STRING_DEFAULT_LENGTH 100
+
 // UI
 typedef enum OverlayMode {
     OVERLAY_DEFAULT = 0,

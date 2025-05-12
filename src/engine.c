@@ -1,8 +1,8 @@
 #include "engine.h"
 
 extern const b8 enable_validation_layers;
-extern const char* const* validation_layer;
-extern const char* const* device_extension;
+extern const char validation_layers[1][100];
+extern const char device_extensions[2][100];
 
 /*
 -----~~~~~=====<<<<<{_CORE_FUNCTIONS_}>>>>>=====~~~~~-----
@@ -137,7 +137,7 @@ b8 init_vulkan(engine* e) {
 	printf("initializing vulkan\n");
 	
 	// Vulkan instance --------------------====<	
-	if (enable_validation_layers && !check_validation_layer_support(validation_layer)) {
+	if (enable_validation_layers && !check_validation_layer_support(validation_layers)) {
         printf("validation layer requested, but not available!\n");
 		return false;
     }
@@ -158,34 +158,44 @@ b8 init_vulkan(engine* e) {
 	u32 extension_count = 0;
     const char* const* sdl_extensions = SDL_Vulkan_GetInstanceExtensions(&extension_count);
 	
-    //char* base = sdl_extensions;
-    //char* append = validation_layer;
-    //const char* const* extensions = sdl_extensions;
-	
-    /*if (enable_validation_layers) {
-		snprintf(extensions, sizeof(extensions),"%s%s", (char*)sdl_extensions, (char*)VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-		extension_count++;
+    if (enable_validation_layers) {
+        extension_count++; // for debug utils
+    }
+
+    char** extensions = NULL;
+    extensions = (char**)malloc(extension_count * sizeof(char*));
+
+    if (extensions == NULL) {
+        printf("failed to allocate memory for extensions list\n");
+        return false;
+    }
+
+    if (enable_validation_layers) {
+        for (int i = 0; i < extension_count-1; i++) {
+            extensions[i] = sdl_extensions[i];
+        }
+        extensions[extension_count-1] = VK_EXT_DEBUG_UTILS_EXTENSION_NAME;
 	}
 	else {
-		snprintf(extensions, sizeof(extensions),"%s", (char*)sdl_extensions);
-	}*/
-	
-	//printf("extensions: %s\n", extensions);
+        for (int i = 0; i < extension_count; i++) {
+            extensions[i] = sdl_extensions[i];
+        }
+	}
 
     instanceCreateInfo.enabledExtensionCount = extension_count;
-    instanceCreateInfo.ppEnabledExtensionNames = sdl_extensions;
+    instanceCreateInfo.ppEnabledExtensionNames = extensions;
 	
-    /*
+    
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo = populate_debug_messenger_create_info();
     if (enable_validation_layers) {
         instanceCreateInfo.enabledLayerCount = 1; // FIXME HARD CODED
-        instanceCreateInfo.ppEnabledLayerNames = (char*)validation_layer;
+        instanceCreateInfo.ppEnabledLayerNames = validation_layers;
         instanceCreateInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
     }
     else {
         instanceCreateInfo.enabledLayerCount = 0;
         instanceCreateInfo.pNext = NULL;
-    }*/
+    }
 
     instanceCreateInfo.enabledLayerCount = 0;
     instanceCreateInfo.pNext = NULL;
@@ -313,5 +323,9 @@ b8 init_vulkan(engine* e) {
     vkGetDeviceQueue(device_, indices.graphicsFamily.value(), 0, &graphicsQueue_);
     vkGetDeviceQueue(device_, indices.presentFamily.value(), 0, &presentQueue_);
 */
+
+    // Free memory for the array of pointers
+    free(extensions);
+
 	return true;
 }
